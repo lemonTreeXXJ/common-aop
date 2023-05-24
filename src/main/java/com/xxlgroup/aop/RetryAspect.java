@@ -19,17 +19,25 @@ import java.util.concurrent.*;
 @Slf4j
 public class RetryAspect {
 
-    @Value("retry.corePoolSize:3")
+    @Value("${retry.corePoolSize:3}")
     private int corePoolSize;
-    @Value("retry.maximumPoolSize:5")
+    @Value("${retry.maximumPoolSize:5}")
     private int maximumPoolSize;
 
-    ExecutorService executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
-            1, TimeUnit.MINUTES,
-            new LinkedBlockingQueue<Runnable>());
+    private ExecutorService executorService;
+    @PostConstruct
+    public void init(){
+        executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize,
+                1, TimeUnit.MINUTES,
+                new LinkedBlockingQueue<Runnable>());
+    }
 
+    @Pointcut("@annotation(retry)")
+    public void pointCutNoRetry(Retry retry) {
 
-    @Around(value = "@annotation(retry)")
+    }
+
+    @Around(value = "pointCutNoRetry(retry)")
     public Object execute(ProceedingJoinPoint joinPoint, Retry retry) throws Exception {
         RetryTemplate retryTemplate = new RetryTemplate() {
             @Override

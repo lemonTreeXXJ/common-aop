@@ -8,3 +8,6 @@ https://account.jetbrains.com/profile-details
 First Name：xu
 last Name：show
 Username：lemontreexxj
+
+1、用户拦截器
+2、全局异常捕获
